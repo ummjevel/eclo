@@ -292,6 +292,76 @@ class KokoroModel(TTSModelInterface):
         return ["en", "ja"]
 
 
+class Qwen3TTSModel(TTSModelInterface):
+    """Qwen3-TTS Model implementation - Alibaba's multilingual TTS"""
+
+    def __init__(self, model_path: str = "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-4bit"):
+        self.model_path = model_path
+        self.loaded = True
+
+    def load(self) -> bool:
+        return True
+
+    def generate(
+        self,
+        text: str,
+        language: str,
+        output_path: str,
+        ref_audio: Optional[str] = None,
+        ref_text: Optional[str] = None,
+        instruct_text: Optional[str] = None,
+        speed: float = 1.0
+    ) -> Dict[str, Any]:
+        try:
+            from mlx_audio.tts.generate import generate_audio
+            import soundfile as sf
+
+            report_progress("loading", 10, "Loading Qwen3-TTS model...")
+
+            output_dir = os.path.dirname(output_path)
+            file_prefix = os.path.splitext(os.path.basename(output_path))[0]
+            full_prefix = os.path.join(output_dir, file_prefix) if output_dir else file_prefix
+
+            report_progress("processing", 30, "Generating audio...")
+
+            with suppress_stdout():
+                generate_audio(
+                    text=text,
+                    model=self.model_path,
+                    ref_audio=ref_audio,
+                    file_prefix=full_prefix,
+                )
+
+            report_progress("saving", 80, "Saving audio file...")
+
+            actual_output = f"{full_prefix}_0.wav"
+
+            import glob
+            possible_files = glob.glob(f"{full_prefix}*.wav")
+            if possible_files and not os.path.exists(actual_output):
+                actual_output = possible_files[0]
+
+            if actual_output != output_path and os.path.exists(actual_output):
+                os.rename(actual_output, output_path)
+
+            if os.path.exists(output_path):
+                audio_data, sample_rate = sf.read(output_path)
+                duration = len(audio_data) / sample_rate
+            else:
+                return {"success": False, "error": "Audio generation failed - output file not created"}
+
+            return {
+                "success": True,
+                "output_path": output_path,
+                "duration": duration
+            }
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def get_supported_languages(self) -> list:
+        return ["zh", "en", "ja", "ko", "de", "es", "fr", "it", "pt", "ru"]
+
+
 class EcloTTSService:
     """
     Eclo TTS Service
@@ -302,6 +372,8 @@ class EcloTTSService:
         "mlx-community/Fun-CosyVoice3-0.5B-2512-fp16": CosyVoice3Model,
         "mlx-community/OuteTTS-0.2-500M-MLX": OuteTTSModel,
         "mlx-community/Kokoro-82M-MLX": KokoroModel,
+        "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-4bit": Qwen3TTSModel,
+        "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16": Qwen3TTSModel,
     }
 
     def __init__(self, model_id: str = "mlx-community/Fun-CosyVoice3-0.5B-2512-fp16"):
@@ -366,6 +438,18 @@ class EcloTTSService:
                 "name": "CosyVoice3 0.5B",
                 "languages": ["zh", "en", "ja", "ko", "de", "es", "fr", "it", "ru"],
                 "features": ["voice_cloning", "cross_lingual", "instruct"]
+            },
+            {
+                "id": "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-4bit",
+                "name": "Qwen3-TTS 0.6B (4bit)",
+                "languages": ["zh", "en", "ja", "ko", "de", "es", "fr", "it", "pt", "ru"],
+                "features": ["voice_cloning"]
+            },
+            {
+                "id": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16",
+                "name": "Qwen3-TTS 1.7B CustomVoice",
+                "languages": ["zh", "en", "ja", "ko", "de", "es", "fr", "it", "pt", "ru"],
+                "features": ["voice_cloning", "custom_voice"]
             },
             {
                 "id": "mlx-community/OuteTTS-0.2-500M-MLX",

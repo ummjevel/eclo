@@ -15,6 +15,7 @@ from tts_service import (
     CosyVoice3Model,
     OuteTTSModel,
     KokoroModel,
+    Qwen3TTSModel,
     EcloTTSService
 )
 
@@ -87,6 +88,31 @@ class TestKokoroModel:
         assert model.loaded is True
 
 
+class TestQwen3TTSModel:
+    """Tests for Qwen3-TTS model"""
+
+    def test_supported_languages(self):
+        """Qwen3-TTS should support 10 languages"""
+        model = Qwen3TTSModel()
+        langs = model.get_supported_languages()
+        assert 'ko' in langs
+        assert 'en' in langs
+        assert 'ja' in langs
+        assert 'zh' in langs
+        assert 'pt' in langs  # Portuguese - unique to Qwen3
+        assert len(langs) == 10
+
+    def test_loaded_by_default(self):
+        """Model should be marked as loaded by default"""
+        model = Qwen3TTSModel()
+        assert model.loaded is True
+
+    def test_default_model_path(self):
+        """Should use 0.6B 4bit model by default"""
+        model = Qwen3TTSModel()
+        assert "0.6B-Base-4bit" in model.model_path
+
+
 class TestEcloTTSService:
     """Tests for the main TTS service"""
 
@@ -94,7 +120,7 @@ class TestEcloTTSService:
         """Should return list of available models"""
         models = EcloTTSService.get_available_models()
         assert isinstance(models, list)
-        assert len(models) >= 3  # At least 3 built-in models
+        assert len(models) >= 5  # At least 5 built-in models (including Qwen3)
 
         # Check model structure
         for model in models:
@@ -113,6 +139,9 @@ class TestEcloTTSService:
 
         kokoro = next(m for m in models if 'Kokoro' in m['name'])
         assert 'voice_cloning' not in kokoro['features']
+
+        qwen3 = next(m for m in models if 'Qwen3' in m['name'])
+        assert 'voice_cloning' in qwen3['features']
 
     def test_change_model(self):
         """Should be able to change model"""
@@ -142,7 +171,7 @@ class TestCLI:
 
         models = json.loads(result.stdout)
         assert isinstance(models, list)
-        assert len(models) >= 3
+        assert len(models) >= 5  # Including Qwen3 models
 
     def test_list_languages(self, script_path):
         """CLI should return valid JSON for list-languages"""
