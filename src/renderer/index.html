@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <title>Eclo - Multilingual TTS</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Consent Modal -->
+    <div id="consent-modal" class="modal">
+      <div class="modal-content consent-modal-content">
+        <h1>Welcome to Eclo</h1>
+        <p class="subtitle">Multilingual On-Device TTS & Voice Cloning</p>
+
+        <div class="terms-scroll">
+          <h3>Terms of Service</h3>
+          <div class="terms-content">
+            <h4>1. User Responsibility</h4>
+            <p>You are responsible for ensuring you have the legal right to clone any voice you use with this software. Unauthorized voice cloning may violate laws including the ELVIS Act and other right of publicity laws.</p>
+
+            <h4>2. Prohibited Uses</h4>
+            <ul>
+              <li>Cloning voices without consent</li>
+              <li>Creating content for fraud, defamation, or harassment</li>
+              <li>Generating political misinformation</li>
+              <li>Unauthorized commercial use of celebrity voices</li>
+              <li>Any illegal activities</li>
+            </ul>
+
+            <h4>3. Disclaimer</h4>
+            <p>This software is provided "AS IS". The developer is not responsible for any content created using this software or any legal consequences arising from misuse.</p>
+
+            <h4>4. Data Privacy</h4>
+            <p>All processing is done locally on your device. No audio data is sent to external servers.</p>
+          </div>
+        </div>
+
+        <div class="consent-checkboxes">
+          <label class="checkbox-container">
+            <input type="checkbox" id="terms-agree">
+            <span class="checkmark"></span>
+            <span>I have read and agree to the Terms of Service</span>
+          </label>
+
+          <label class="checkbox-container">
+            <input type="checkbox" id="voice-rights-agree">
+            <span class="checkmark"></span>
+            <span>I understand that I am responsible for ensuring I have the legal right to clone any voice I use</span>
+          </label>
+
+          <label class="checkbox-container">
+            <input type="checkbox" id="no-illegal-agree">
+            <span class="checkmark"></span>
+            <span>I will not use this software for fraud, defamation, impersonation, or any illegal purposes</span>
+          </label>
+        </div>
+
+        <button id="consent-continue" class="primary-button" disabled>Continue</button>
+      </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="hidden">
+      <!-- Title Bar -->
+      <div class="title-bar">
+        <div class="window-controls">
+          <span class="control close"></span>
+          <span class="control minimize"></span>
+          <span class="control maximize"></span>
+        </div>
+        <div class="title">Eclo</div>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <nav class="nav-menu">
+            <button class="nav-item active" data-view="tts">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+              </svg>
+              <span>TTS</span>
+            </button>
+            <button class="nav-item" data-view="history">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>History</span>
+            </button>
+            <button class="nav-item" data-view="settings">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <span>Settings</span>
+            </button>
+          </nav>
+
+          <div class="sidebar-footer">
+            <div class="model-info">
+              <span class="label">Model:</span>
+              <span id="current-model" class="value">CosyVoice3</span>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+          <!-- TTS View -->
+          <div id="tts-view" class="view active">
+            <div class="view-header">
+              <h2>Text to Speech</h2>
+              <p class="subtitle">Select a voice and enter text to generate speech</p>
+            </div>
+
+            <div class="tts-form">
+              <!-- Reference Voice Selection -->
+              <div class="form-group">
+                <label>Reference Voice</label>
+                <div class="voice-selector">
+                  <div class="preset-voices" id="preset-voices">
+                    <!-- Preset voices will be populated dynamically -->
+                  </div>
+                  <div class="custom-voice-option">
+                    <button id="add-custom-voice-btn" class="secondary-button">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      Add Custom Voice
+                    </button>
+                  </div>
+                </div>
+                <div id="selected-voice-info" class="selected-voice-info">
+                  <span class="voice-name">No voice selected</span>
+                  <button id="preview-voice-btn" class="icon-button small" title="Preview voice" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Reference Text for Custom Voice -->
+                <div id="custom-voice-ref-container" class="custom-voice-ref hidden">
+                  <div class="form-group">
+                    <label for="custom-ref-text">
+                      Reference Text
+                      <span class="hint">(What is said in the audio sample)</span>
+                    </label>
+                    <textarea id="custom-ref-text" placeholder="Enter the exact text spoken in your voice sample..." rows="2"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="tts-text">Enter text to convert</label>
+                <textarea id="tts-text" placeholder="Type or paste your text here..." rows="6"></textarea>
+                <div class="char-count"><span id="char-count">0</span> / 5000</div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="tts-language">Language</label>
+                  <select id="tts-language">
+                    <option value="ko">한국어 (Korean)</option>
+                    <option value="en">English</option>
+                    <option value="ja">日本語 (Japanese)</option>
+                    <option value="zh">中文 (Chinese)</option>
+                    <option value="de">Deutsch (German)</option>
+                    <option value="es">Español (Spanish)</option>
+                    <option value="fr">Français (French)</option>
+                    <option value="it">Italiano (Italian)</option>
+                    <option value="ru">Русский (Russian)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="tts-speed">Speed</label>
+                  <div class="speed-control">
+                    <input type="range" id="tts-speed" min="0.5" max="2" step="0.1" value="1">
+                    <span id="speed-value">1.0x</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="tts-style">Style Instruction (Optional)</label>
+                <input type="text" id="tts-style" placeholder="e.g., Speak slowly and calmly">
+              </div>
+
+              <div class="form-actions">
+                <button id="generate-btn" class="primary-button" disabled>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  Generate
+                </button>
+              </div>
+            </div>
+
+            <!-- Audio Player -->
+            <div id="audio-player" class="audio-player hidden">
+              <div class="waveform" id="waveform"></div>
+              <div class="player-controls">
+                <button id="play-btn" class="icon-button">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                </button>
+                <div class="time-display">
+                  <span id="current-time">0:00</span> / <span id="total-time">0:00</span>
+                </div>
+                <div class="save-controls">
+                  <select id="save-format" class="save-format-select">
+                    <option value="wav">WAV</option>
+                    <option value="mp3">MP3</option>
+                    <option value="ogg">OGG</option>
+                    <option value="flac">FLAC</option>
+                  </select>
+                  <button id="save-btn" class="icon-button" title="Save As...">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress -->
+            <div id="progress-container" class="progress-container hidden">
+              <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+              </div>
+              <span id="progress-text">Generating...</span>
+            </div>
+          </div>
+
+          <!-- History View -->
+          <div id="history-view" class="view hidden">
+            <div class="view-header">
+              <h2>History</h2>
+            </div>
+            <div class="history-list" id="history-list">
+              <div class="empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <p>No generation history yet</p>
+                <span>Generated audio will appear here</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings View -->
+          <div id="settings-view" class="view hidden">
+            <div class="view-header">
+              <h2>Settings</h2>
+            </div>
+
+            <div class="settings-content">
+              <!-- TTS Model Settings -->
+              <section class="settings-section">
+                <h3>TTS Model</h3>
+                <div class="model-list" id="model-list">
+                  <!-- Models will be populated dynamically -->
+                </div>
+                <div class="form-group">
+                  <label for="custom-model-path">Custom Model Path (HuggingFace ID or local path)</label>
+                  <input type="text" id="custom-model-path" placeholder="mlx-community/your-model">
+                  <button id="apply-custom-model" class="secondary-button">Apply Custom Model</button>
+                </div>
+              </section>
+
+              <!-- Privacy Settings -->
+              <section class="settings-section">
+                <h3>Privacy & Security</h3>
+                <label class="checkbox-container">
+                  <input type="checkbox" id="watermark-enabled" checked>
+                  <span class="checkmark"></span>
+                  <span>Enable audio watermarking (recommended)</span>
+                </label>
+                <p class="hint">Adds an inaudible identifier to generated audio for tracking purposes</p>
+              </section>
+
+              <!-- UI Settings -->
+              <section class="settings-section">
+                <h3>Interface</h3>
+                <div class="form-group">
+                  <label for="ui-language">UI Language</label>
+                  <select id="ui-language">
+                    <option value="ko">한국어</option>
+                    <option value="en">English</option>
+                    <option value="ja">日本語</option>
+                    <option value="zh">中文</option>
+                  </select>
+                </div>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

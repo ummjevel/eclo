@@ -1,0 +1,16 @@
+# Eclo TTS Service Dependencies
+
+# Core ML Framework for Apple Silicon
+mlx>=0.20.0
+
+# TTS Inference Engine
+mlx-audio>=0.1.0
+mlx-audio-plus>=0.1.0
+
+# Audio Processing
+soundfile>=0.12.0
+pydub>=0.25.0
+
+# Utilities
+numpy>=1.24.0
+huggingface-hub>=0.20.0
